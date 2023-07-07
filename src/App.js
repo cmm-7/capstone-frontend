@@ -32,7 +32,6 @@ function App() {
     cover_photo: "",
   });
 
-  console.log(currentUser);
   const libraries = ["places"];
   const { isLoaded } = useLoadScript({
     id: "google-map-script",
