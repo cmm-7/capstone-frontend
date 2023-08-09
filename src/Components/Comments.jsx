@@ -263,8 +263,8 @@ export default function Comments({
         ({ id, username, user_comment, profile_pic, user_id, mood }) => {
           return (
             <div className="mt-4 group" ref={commentRef}>
-              <div class="flex flex-col space-y-2">
-                <div class="bg-white p-2 rounded-lg shadow-md relative">
+              <div className="flex flex-col space-y-2">
+                <div className="bg-white p-2 rounded-lg shadow-md relative">
                   <img
                     src={profile_pic}
                     className="rounded-full h-6 w-6 outline outline-orange-500 outline-1 cursor-pointer absolute left-2 top-2"
@@ -313,7 +313,7 @@ export default function Comments({
                   )}
                   <div className="pl-8">
                     <h3
-                      class="text-sm font-bold cursor-pointer"
+                      className="text-sm font-bold cursor-pointer"
                       onClick={() => {
                         setChatTargetID(user_id);
                         setProfileOpen(true);
