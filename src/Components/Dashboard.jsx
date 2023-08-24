@@ -93,7 +93,12 @@ export default function Dashboard({
   const [navigation, setNavigation] = useState([
     { name: "Home", href: "/dashboard", icon: HomeIcon, current: true },
     { name: "My Events", href: "#", icon: Bars4Icon, current: false },
-    { name: "Recently Viewed", href: "#", icon: ClockIcon, current: false },
+    {
+      name: "Recently Viewed",
+      href: "/recently-viewed",
+      icon: ClockIcon,
+      current: false,
+    },
   ]);
 
   const pinnedEvents = events.filter((event) => event.pinned);
@@ -517,7 +522,7 @@ export default function Dashboard({
                 />
               </div>
             </div>
-            {/* Navigation */}
+            {/* Navigation - Current Task */}
             <nav className="mt-6 px-3">
               <div className="space-y-1">
                 {navigation.map((item) => (
@@ -532,11 +537,11 @@ export default function Dashboard({
                     )}
                     aria-current={item.current ? "page" : undefined}
                     onClick={() => {
-                      const indexOfCurrent = navigation.findIndex(
-                        (item) => item.current
-                      );
-                      navigation[indexOfCurrent].current = false;
-                      item.current = true;
+                      const updatedNavigation = navigation.map((navItem) => ({
+                        ...navItem,
+                        current: navItem.name === item.name,
+                      }));
+                      setNavigation(updatedNavigation);
                     }}
                   >
                     <item.icon

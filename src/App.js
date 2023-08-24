@@ -13,6 +13,7 @@ import "./App.css";
 import axios from "axios";
 import Example from "./Components/CreateEventSlideOver";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
+import RecentViews from "./Components/RecentViews/RecentViews";
 
 function App() {
   const { session } = useStytchSession();
@@ -81,6 +82,7 @@ function App() {
                 />
               }
             />
+            <Route path="/recently-viewed" element={<RecentViews />} />
             <Route
               path="/login"
               element={
