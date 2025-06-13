@@ -28,6 +28,9 @@ export default function ListingView({
   unRSVPSuccess,
   setChatTargetID,
 }) {
+  if (!currentUser?.id) {
+    throw new Error("User ID is missing on load. App cannot proceed.");
+  }
   const currentUserId = currentUser.id;
   const [attendeesSortOrder, setAttendeesSortOrder] = useState(0);
   const [eventDateSortOrder, setEventDateSortOrder] = useState(0);

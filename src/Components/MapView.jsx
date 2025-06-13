@@ -22,7 +22,6 @@ import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 export default function MapView({
-  isLoaded,
   events,
   setCurrentEvent,
   slideoverOpen,
@@ -38,6 +37,16 @@ export default function MapView({
   unRSVPSuccess,
   currentEvent,
 }) {
+  const libraries = ["places"];
+
+  const { isLoaded } = useLoadScript({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries,
+    version: "weekly",
+    async: true,
+  });
+
   const [selected, setSelected] = useState({
     lat: 40.7127753,
     lng: -74.0059728,
@@ -188,7 +197,7 @@ export default function MapView({
 
             <div className="overflow-auto  pl-[10px] pr-[10px] pb-[10px] flex flex-col max-h-[600px]">
               {events.map((event, key) => {
-                console.log(event)
+                console.log(event);
                 return (
                   <Card
                     key={key}
@@ -215,14 +224,19 @@ export default function MapView({
                         </Typography>
                         <Typography>{event.event_date}</Typography>
                         <Typography>{event.event_address}</Typography>
-                        <Typography>   {event.category && event.category.map((categoryItem, index) => (
-              <span
-                key={index}
-                className="bg-gray-200 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-              >
-                {categoryItem.charAt(0).toUpperCase() + categoryItem.slice(1)}
-              </span>
-            ))}</Typography>
+                        <Typography>
+                          {" "}
+                          {event.category &&
+                            event.category.map((categoryItem, index) => (
+                              <span
+                                key={index}
+                                className="bg-gray-200 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                              >
+                                {categoryItem.charAt(0).toUpperCase() +
+                                  categoryItem.slice(1)}
+                              </span>
+                            ))}
+                        </Typography>
                       </div>
                     </CardBody>
                     <CardFooter className=" flex pt-0">

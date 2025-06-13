@@ -1026,7 +1026,6 @@ export default function Dashboard({
                   />
                 ) : (
                   <MapView
-                    isLoaded={isLoaded}
                     events={events}
                     setCurrentEvent={setCurrentEvent}
                     slideoverOpen={slideoverOpen}

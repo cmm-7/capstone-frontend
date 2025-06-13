@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useStytchSession } from "@stytch/react";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,11 +14,14 @@ import SignUp from "./Components/SignUp";
 import Profile from "./Components/profile/Profile";
 import EditProfile from "./Components/profile/EditProfile";
 import "./App.css";
+import HomeRedirect from "./Components/HomeRedirect";
 
 import axios from "axios";
 import Example from "./Components/CreateEventSlideOver";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import RecentViews from "./Components/RecentViews/RecentViews";
+
+const libraries = ["places"];
 
 function App() {
   const { session } = useStytchSession();
@@ -33,13 +41,6 @@ function App() {
     cover_photo: "",
   });
 
-  const libraries = ["places"];
-  const { isLoaded } = useLoadScript({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.REACT_APP_API_KEY,
-    libraries,
-  });
-
   useEffect(() => {
     // const currentUserID = session.user_id;
     if (session && session.authentication_factors.length >= 1) {
@@ -49,10 +50,8 @@ function App() {
 
   const userLogin = (stytch_id) => {
     return axios.get(`${API}/users/${stytch_id}`).then((res) => {
-      console.log(res.data);
       let currentUserPreJSON = res.data;
       currentUserPreJSON.friends = currentUserPreJSON.friends || [];
-      console.log(currentUserPreJSON.friends);
       currentUserPreJSON.friends = currentUserPreJSON?.friends?.map((elem) =>
         JSON.parse(elem)
       );
@@ -70,18 +69,25 @@ function App() {
         <main>
           <Routes>
             <Route
-              path="/dashboard"
-              element={
-                <Dashboard
-                  API={API}
-                  session={session}
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  isLoaded={isLoaded}
-                  toast={toast}
-                />
-              }
+              path="/"
+              element={<HomeRedirect currentUser={currentUser} />}
             />
+
+            {currentUser.id && (
+              <Route
+                path="/dashboard"
+                element={
+                  <Dashboard
+                    API={API}
+                    session={session}
+                    currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                    toast={toast}
+                  />
+                }
+              />
+            )}
+
             <Route path="/recently-viewed" element={<RecentViews />} />
             <Route
               path="/login"
@@ -117,19 +123,6 @@ function App() {
                   setCurrentUser={setCurrentUser}
                   session={session}
                   currentUser={currentUser}
-                />
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <Dashboard
-                  API={API}
-                  session={session}
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  isLoaded={isLoaded}
-                  toast={toast}
                 />
               }
             />
