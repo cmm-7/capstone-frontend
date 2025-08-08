@@ -1,14 +1,9 @@
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import ConfirmationModal from "./ConfirmationModal";
 import axios from "axios";
 import Comments from "./Comments";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function EventSlideover({
   currentUser,

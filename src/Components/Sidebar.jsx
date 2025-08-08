@@ -8,15 +8,9 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
-import {
-  Bars3CenterLeftIcon,
-  Bars4Icon,
-  ClockIcon,
-  HomeIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { Bars4Icon, ClockIcon, HomeIcon } from "@heroicons/react/24/outline";
 
-function Sidebar({ currentUser, session }) {
+function Sidebar({ currentUser, session, setCurrentUser }) {
   const navigation = [
     { name: "Home", href: "/dashboard", icon: HomeIcon, current: true },
     { name: "My Events", href: "#", icon: Bars4Icon, current: false },
@@ -31,8 +25,25 @@ function Sidebar({ currentUser, session }) {
   const stytchClient = useStytch();
 
   const logout = () => {
-    stytchClient.session.revoke();
-    navigate("/login");
+    stytchClient.session.revoke().then(() => {
+      // Clear the current user state
+      if (setCurrentUser) {
+        setCurrentUser({
+          stytch_id: "",
+          first_name: "",
+          middle_name: "",
+          last_name: "",
+          username: "",
+          about_me: "",
+          interests: [],
+          intra_extraversion: 50,
+          phone_number: "0000000000",
+          profile_pic: "",
+          cover_photo: "",
+        });
+      }
+      navigate("/login");
+    });
   };
 
   function classNames(...classes) {
@@ -96,73 +107,73 @@ function Sidebar({ currentUser, session }) {
               <div className="py-1">
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className={classNames(
                         active ? "bg-orange-500 text-white" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block w-full text-left px-4 py-2 text-sm"
                       )}
                       onClick={viewProfile}
                     >
                       View profile
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className={classNames(
                         active ? "bg-orange-500 text-white" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block w-full text-left px-4 py-2 text-sm"
                       )}
                     >
                       Settings
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className={classNames(
                         active ? "bg-orange-500 text-white" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block w-full text-left px-4 py-2 text-sm"
                       )}
                     >
                       Notifications
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
               </div>
               <div className="py-1">
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className={classNames(
                         active ? "bg-orange-500 text-white" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block w-full text-left px-4 py-2 text-sm"
                       )}
                     >
                       About
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
               </div>
               <div className="py-1">
                 <Menu.Item>
                   {({ active }) => (
-                    <a
-                      // href="javascript:;"
+                    <button
+                      type="button"
                       className={classNames(
                         active ? "bg-orange-500 text-white" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block w-full text-left px-4 py-2 text-sm"
                       )}
                       onClick={logout}
                     >
                       Logout
-                    </a>
+                    </button>
                   )}
                 </Menu.Item>
               </div>

@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   Bars3CenterLeftIcon,
@@ -35,7 +35,6 @@ import { useEffect } from "react";
 import LogoSVG from "../socialCircleLogo.svg";
 import EventSlideover from "./EventSlideover";
 import IconCarousel from "./IconCarousel";
-import Sidebar from "./Sidebar";
 import ConfirmationModal from "./ConfirmationModal";
 import ProfileSlideover from "./ProfileSlideover";
 import EditEventSlideOver from "./EditEventSlideOver";
@@ -134,20 +133,36 @@ export default function Dashboard({
   };
 
   useEffect(() => {
-    axios.get(`${API}/events`).then((res) => {
-      setEvents(res.data);
-      setListingEvents(res.data);
-    });
-    axios.get(`${API}/usersevents/firstfour`).then((res) => {
-      setRSVPDUsers(res.data);
-    });
-    axios.get(`${API}/usersevents/totalrsvps`).then((res) => {
-      setTotalRSVPS(res.data);
-    });
-    axios.get(`${API}/usersevents/${currentUser.id}`).then((res) => {
-      setCurrentUsersRSVPS(res.data);
-    });
-  }, [currentUser]);
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const [eventsRes, rsvpdUsersRes, totalRSVPSRes, userRSVPSRes] =
+          await Promise.all([
+            axios.get(`${API}/events`),
+            axios.get(`${API}/usersevents/firstfour`),
+            axios.get(`${API}/usersevents/totalrsvps`),
+            axios.get(`${API}/usersevents/${currentUser.id}`),
+          ]);
+
+        if (isMounted) {
+          setEvents(eventsRes.data);
+          setListingEvents(eventsRes.data);
+          setRSVPDUsers(rsvpdUsersRes.data);
+          setTotalRSVPS(totalRSVPSRes.data);
+          setCurrentUsersRSVPS(userRSVPSRes.data);
+        }
+      } catch (error) {
+        console.error("Error loading initial data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [API, currentUser.id]);
 
   useEffect(() => {
     if (chatTargetID) {
@@ -157,13 +172,13 @@ export default function Dashboard({
         console.log(res.data);
       });
     }
-  }, [chatTargetID]);
+  }, [chatTargetID, API]);
 
   useEffect(() => {
     if (!session || !session.session_id) {
       navigate("/login");
     }
-  }, [session]);
+  }, [session, navigate]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -178,10 +193,26 @@ export default function Dashboard({
     } else {
       setListingEvents(events);
     }
-  }, [searchTerm]);
+  }, [searchTerm, events]);
 
   const logout = () => {
-    stytchClient.session.revoke().then(() => navigate("/login"));
+    stytchClient.session.revoke().then(() => {
+      // Clear the current user state
+      setCurrentUser({
+        stytch_id: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        username: "",
+        about_me: "",
+        interests: [],
+        intra_extraversion: 50,
+        phone_number: "0000000000",
+        profile_pic: "",
+        cover_photo: "",
+      });
+      navigate("/login");
+    });
   };
 
   const updateEvents = (newEvent) => {
@@ -203,6 +234,13 @@ export default function Dashboard({
     listingEvents[listingEventIndex] = updatedEvent;
     setListingEvents([...listingEvents]);
   };
+
+  // Memoize sorted listingEvents by event_date to avoid unnecessary re-renders
+  const sortedListingEvents = useMemo(() => {
+    return [...listingEvents].sort((a, b) =>
+      a.event_date.localeCompare(b.event_date)
+    );
+  }, [listingEvents]);
 
   return (
     <div>
@@ -447,51 +485,52 @@ export default function Dashboard({
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           className={classNames(
                             active
                               ? "bg-orange-500 text-white"
                               : "text-gray-700",
-                            "block px-4 py-2 text-sm cursor-pointer"
+                            "block w-full text-left px-4 py-2 text-sm cursor-pointer"
                           )}
                         >
                           Notifications
-                        </a>
+                        </button>
                       )}
                     </Menu.Item>
                   </div>
                   <div className="py-1">
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           className={classNames(
                             active
                               ? "bg-orange-500 text-white"
                               : "text-gray-700",
-                            "block px-4 py-2 text-sm cursor-pointer"
+                            "block w-full text-left px-4 py-2 text-sm cursor-pointer"
                           )}
                         >
                           About
-                        </a>
+                        </button>
                       )}
                     </Menu.Item>
                   </div>
                   <div className="py-1">
                     <Menu.Item>
                       {({ active }) => (
-                        <a
+                        <button
+                          type="button"
                           className={classNames(
                             active
                               ? "bg-orange-500 text-white"
                               : "text-gray-700",
-                            "block px-4 py-2 text-sm cursor-pointer"
+                            "block w-full text-left px-4 py-2 text-sm cursor-pointer"
                           )}
                           onClick={logout}
                         >
                           Logout
-                        </a>
+                        </button>
                       )}
                     </Menu.Item>
                   </div>
@@ -726,33 +765,35 @@ export default function Dashboard({
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
+                            <button
+                              type="button"
                               className={classNames(
                                 active
                                   ? "bg-orange-500 text-white"
                                   : "text-gray-700",
-                                "block px-4 py-2 text-sm"
+                                "block w-full text-left px-4 py-2 text-sm"
                               )}
                             >
                               About
-                            </a>
+                            </button>
                           )}
                         </Menu.Item>
                       </div>
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
-                            <a
+                            <button
+                              type="button"
                               className={classNames(
                                 active
                                   ? "bg-orange-500 text-white"
                                   : "text-gray-700",
-                                "block px-4 py-2 text-sm"
+                                "block w-full text-left px-4 py-2 text-sm"
                               )}
                               onClick={logout}
                             >
                               Logout
-                            </a>
+                            </button>
                           )}
                         </Menu.Item>
                       </div>
@@ -1005,7 +1046,7 @@ export default function Dashboard({
                     currentUser={currentUser}
                     events={events}
                     setEvents={setEvents}
-                    listingEvents={listingEvents}
+                    listingEvents={sortedListingEvents}
                     setListingEvents={setListingEvents}
                     classNames={classNames}
                     rsvpdUsers={rsvpdUsers}

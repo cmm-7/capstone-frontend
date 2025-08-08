@@ -1,15 +1,12 @@
-import { StytchLogin, Products, useStytch } from "@stytch/react";
-import { useEffect } from "react";
+import { useStytch } from "@stytch/react";
 import LogoSVG from "../socialCircleLogo.svg";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function Login({ toast, userLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const API = process.env.REACT_APP_API_URL;
 
   let navigate = useNavigate();
   const signUpRedirect = () => {
@@ -38,9 +35,7 @@ export default function Login({ toast, userLogin }) {
         session_duration_minutes: 60,
       })
       .then((res) => {
-        console.log("RESPONSE ---- ", res);
         if (res.status_code === 200 && res.session_token) {
-          console.log(res);
           userLogin(res.user_id).then(() => {
             navigate("/dashboard");
           });
@@ -141,12 +136,12 @@ export default function Login({ toast, userLogin }) {
                 </div>
 
                 <div className="text-sm leading-6">
-                  <a
-                    href="#"
+                  <button
+                    type="button"
                     className="font-semibold text-orange-500 hover:text-orange-600"
                   >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               </div>
 

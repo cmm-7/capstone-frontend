@@ -1,6 +1,5 @@
 import Talk from "talkjs";
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
 
 export default function Chat({
   currentUser,
@@ -57,7 +56,16 @@ export default function Chat({
 
       return () => session.destroy();
     }
-  }, [talkLoaded, chatOpen]);
+  }, [
+    talkLoaded,
+    chatOpen,
+    currentUser,
+    chatTarget.id,
+    chatTarget.email,
+    chatTarget.first_name,
+    chatTarget.last_name,
+    chatTarget.profile_pic,
+  ]);
 
   //   console.log(chatboxEl.current.className);
   return (

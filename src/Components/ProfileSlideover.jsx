@@ -1,11 +1,9 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 
-import commentsBadge from "../badges/comment-badge.png";
-import eventsBadge from "../badges/event-badge.png";
 import axios from "axios";
 
 function classNames(...classes) {
@@ -100,7 +98,7 @@ export default function ProfileSlideover({
                                       ? chatTarget.profile_pic
                                       : currentUser.profile_pic
                                   }
-                                  alt="Profile Picture"
+                                  alt=""
                                 />
                               </div>
                             </div>

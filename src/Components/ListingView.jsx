@@ -4,8 +4,7 @@ import {
   BarsArrowUpIcon,
 } from "@heroicons/react/20/solid";
 import axios from "axios";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function ListingView({
   API,
@@ -28,9 +27,6 @@ export default function ListingView({
   unRSVPSuccess,
   setChatTargetID,
 }) {
-  if (!currentUser?.id) {
-    throw new Error("User ID is missing on load. App cannot proceed.");
-  }
   const currentUserId = currentUser.id;
   const [attendeesSortOrder, setAttendeesSortOrder] = useState(0);
   const [eventDateSortOrder, setEventDateSortOrder] = useState(0);
@@ -48,58 +44,52 @@ export default function ListingView({
 
   const rsvpSuccess = () => toast.success("Successfully RSVP'D", toastSettings);
 
-  console.log(listingEvents);
+  // Use useMemo for efficient sorting
+  const sortedEvents = useMemo(() => {
+    let sorted = [...listingEvents];
 
-  console.log("TOTAL - - - ", totalRSVPS);
+    // Apply attendees sorting
+    if (attendeesSortOrder === 1) {
+      sorted.sort((a, b) => {
+        const aTotalRSVPS =
+          totalRSVPS.find((event) => event.event_id === a.id)?.total_rsvps || 0;
+        const bTotalRSVPS =
+          totalRSVPS.find((event) => event.event_id === b.id)?.total_rsvps || 0;
+        return bTotalRSVPS - aTotalRSVPS;
+      });
+    } else if (attendeesSortOrder === 2) {
+      sorted.sort((a, b) => {
+        const aTotalRSVPS =
+          totalRSVPS.find((event) => event.event_id === a.id)?.total_rsvps || 0;
+        const bTotalRSVPS =
+          totalRSVPS.find((event) => event.event_id === b.id)?.total_rsvps || 0;
+        return aTotalRSVPS - bTotalRSVPS;
+      });
+    }
+
+    // Apply date sorting
+    if (eventDateSortOrder === 1) {
+      sorted.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+    } else if (eventDateSortOrder === 2) {
+      sorted.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+    }
+
+    return sorted;
+  }, [listingEvents, attendeesSortOrder, eventDateSortOrder, totalRSVPS]);
+
+  // Reset to original events when no sorting
   useEffect(() => {
-    if (attendeesSortOrder === 2) {
-      setListingEvents([
-        ...listingEvents.sort((a, b) => {
-          const aTotalRSVPS = totalRSVPS.find(
-            (event) => event.event_id === a.id
-          ).total_rsvps;
-          const bTotalRSVPS = totalRSVPS.find(
-            (event) => event.event_id === b.id
-          ).total_rsvps;
-
-          console.log(aTotalRSVPS, bTotalRSVPS);
-
-          return aTotalRSVPS - bTotalRSVPS;
-        }),
-      ]);
-    } else if (attendeesSortOrder === 1) {
-      setListingEvents([
-        ...listingEvents.sort((a, b) => {
-          const aTotalRSVPS = totalRSVPS.find(
-            (event) => event.event_id === a.id
-          ).total_rsvps;
-          const bTotalRSVPS = totalRSVPS.find(
-            (event) => event.event_id === b.id
-          ).total_rsvps;
-
-          return bTotalRSVPS - aTotalRSVPS;
-        }),
-      ]);
-    } else {
+    if (attendeesSortOrder === 0 && eventDateSortOrder === 0) {
       setListingEvents([...events]);
     }
+  }, [events, attendeesSortOrder, eventDateSortOrder, setListingEvents]);
 
-    if (eventDateSortOrder === 2) {
-      setListingEvents([
-        ...listingEvents.sort(
-          (a, b) => new Date(b.event_date) - new Date(a.event_date)
-        ),
-      ]);
-    } else if (eventDateSortOrder === 1) {
-      setListingEvents([
-        ...listingEvents.sort(
-          (a, b) => new Date(a.event_date) - new Date(b.event_date)
-        ),
-      ]);
-    } else {
-      setListingEvents([...events]);
+  // Update listingEvents when sortedEvents changes
+  useEffect(() => {
+    if (attendeesSortOrder !== 0 || eventDateSortOrder !== 0) {
+      setListingEvents(sortedEvents);
     }
-  }, [attendeesSortOrder, eventDateSortOrder]);
+  }, [sortedEvents, attendeesSortOrder, eventDateSortOrder, setListingEvents]);
 
   return (
     <table className="min-w-full">
@@ -212,7 +202,7 @@ export default function ListingView({
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-100 bg-white">
-        {listingEvents?.map((event, key) => (
+        {sortedEvents?.map((event, key) => (
           <tr
             key={event.id}
             className="hover:bg-orange-500 group cursor-pointer"

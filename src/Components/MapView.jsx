@@ -1,15 +1,5 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  useLoadScript,
-  MarkerF,
-  Icon,
-} from "@react-google-maps/api";
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from "use-places-autocomplete";
-import { Combobox } from "@headlessui/react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import {
   Card,
   CardBody,
@@ -17,8 +7,6 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-import { RocketLaunchIcon } from "@heroicons/react/24/solid";
-import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 export default function MapView({
@@ -47,15 +35,13 @@ export default function MapView({
     async: true,
   });
 
-  const [selected, setSelected] = useState({
+  const [selected] = useState({
     lat: 40.7127753,
     lng: -74.0059728,
   });
   const [eventMarkers, setEventMarkers] = useState(events);
 
-  const center = useMemo(() => selected, []);
-
-  const [selectedMarker, setSelectedMarker] = useState(null);
+  const center = useMemo(() => selected, [selected]);
 
   const containerStyle = {
     width: "100%",
@@ -80,7 +66,7 @@ export default function MapView({
   //   return useRef(null);
   // });
 
-  const reColorSelectedMarker = () => {
+  const reColorSelectedMarker = useCallback(() => {
     const matchingIndex = eventMarkers.findIndex(
       (eventMarker) => eventMarker === currentEvent
     );
@@ -95,11 +81,11 @@ export default function MapView({
         strokeWeight: 2,
       });
     }
-  };
+  }, [eventMarkers, currentEvent]);
 
   useEffect(() => {
     reColorSelectedMarker();
-  }, [currentEvent]);
+  }, [currentEvent, reColorSelectedMarker]);
 
   useEffect(() => {
     if (!slideoverOpen) {
@@ -118,7 +104,7 @@ export default function MapView({
     } else {
       reColorSelectedMarker();
     }
-  }, [slideoverOpen]);
+  }, [slideoverOpen, reColorSelectedMarker]);
 
   if (!isLoaded) return <div>Loading... </div>;
 
