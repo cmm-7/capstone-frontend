@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -24,13 +23,6 @@ export default function EditEventSlideOver({
 }) {
   // const [editEvent, setEditEvent] = useState({});
 
-  const [address, setAddress] = useState({
-    streetAddress: "",
-    city: "",
-    state: "",
-    zip: "",
-  });
-
   const [value, setValue] = useState({
     startDate: null,
     endDate: null,
@@ -38,16 +30,15 @@ export default function EditEventSlideOver({
 
   useEffect(() => {
     setEditEvent(currentEvent);
-  }, [currentEvent]);
+  }, [currentEvent, setEditEvent]);
 
   useEffect(() => {
     setValue({
       startDate: editEvent.event_date,
       endDate: editEvent.event_date,
     });
-  }, [editEvent]);
+  }, [editEvent.event_date, setValue]);
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const [eventPhoto, setEventPhoto] = useState("");
   // const { id } = useParams();
   // const navigate = useNavigate();
@@ -414,7 +405,7 @@ const PlacesAutocomplete = ({ setSelected, editEvent }) => {
 
   useEffect(() => {
     setValue(editEvent.event_address);
-  }, []);
+  }, [editEvent.event_address, setValue]);
 
   return (
     <Combobox onChange={handleSelect}>

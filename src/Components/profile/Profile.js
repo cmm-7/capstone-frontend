@@ -3,22 +3,17 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 import BadgesContent from "./BadgesContent";
 import AboutMeContent from "./AboutMeContent";
-import { Badge } from "@mui/material";
 
-const UserProfile = ({ currentUser, session }) => {
+const UserProfile = ({ currentUser, session, setCurrentUser }) => {
   // This component is for
 
   const navigate = useNavigate();
-
-  const handleSendMessage = () => {
-    // Logic to send a message or email
-  };
 
   useEffect(() => {
     if (!session || !session.session_id) {
       navigate("/login");
     }
-  }, [session]);
+  }, [session, navigate]);
 
   // conditionally rendering the page contents on click
   const [activeContent, setActiveContent] = useState(null);
@@ -30,7 +25,11 @@ const UserProfile = ({ currentUser, session }) => {
   return (
     <div className="min-h-full">
       {/* First Section */}
-      <Sidebar currentUser={currentUser} />
+      <Sidebar
+        currentUser={currentUser}
+        session={session}
+        setCurrentUser={setCurrentUser}
+      />
 
       <head>
         <title>Profile</title>
@@ -61,9 +60,12 @@ const UserProfile = ({ currentUser, session }) => {
             <nav className="lg:hidden flex items-center justify-between p-8 bg-gray-50 mb-3">
               <div className="w-full xl:w-auto px-2 xl:mr-12">
                 <div className="flex items-center justify-between">
-                  <a className="inline-flex items-center h-8" href="#">
+                  <button
+                    type="button"
+                    className="inline-flex items-center h-8"
+                  >
                     <img src="trizzle-assets/logos/trizzle-logo.svg" alt="" />
-                  </a>
+                  </button>
                   <div className="xl:hidden">
                     <button className="navbar-burger text-gray-400 hover focus:outline-none">
                       <svg
@@ -116,14 +118,15 @@ const UserProfile = ({ currentUser, session }) => {
                         <span className="">{currentUser.username}</span>
                       </div>
                     </div>
-                    <a
+                    <button
+                      type="button"
                       className="text-white bg-orange-500 inline-block w-64 py-3 px-6 text-center text-sm leading-6 font-bold transition duration-200 rounded-xl hover:bg-gray-800"
                       onClick={() =>
                         navigate(`/profile/${currentUser.stytch_id}/edit`)
                       }
                     >
                       Edit{" "}
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -132,30 +135,30 @@ const UserProfile = ({ currentUser, session }) => {
                   <div className="p-3 mb-6 bg-gray-50 rounded-xl ">
                     <ul>
                       <li>
-                        <a
-                          className="block py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
-                          href="#"
+                        <button
+                          type="button"
+                          className="block w-full text-left py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
                           onClick={() => handleButtonClick("content1")}
                         >
                           About Me
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a
-                          className="block py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
-                          href="#"
+                        <button
+                          type="button"
+                          className="block w-full text-left py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
                           onClick={() => handleButtonClick("content2")}
                         >
                           Badges
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a
-                          className="block py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
-                          href="#"
+                        <button
+                          type="button"
+                          className="block w-full text-left py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
                         >
                           Event History
-                        </a>
+                        </button>
                       </li>
                       <li>
                         <li>
@@ -168,20 +171,20 @@ const UserProfile = ({ currentUser, session }) => {
                     <ul>
                       <li>
                         <li>
-                          <a
-                            className="block py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
-                            href="#"
+                          <button
+                            type="button"
+                            className="block w-full text-left py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
                           >
                             Interests
-                          </a>
+                          </button>
                         </li>
                         <li>
-                          <a
-                            className="block py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
-                            href="#"
+                          <button
+                            type="button"
+                            className="block w-full text-left py-2 px-3 text-sm leading-6 hover:text-white font-medium rounded-lg transition duration-100 hover:bg-gray-800"
                           >
                             Recommendations
-                          </a>
+                          </button>
                         </li>
                       </li>
                     </ul>

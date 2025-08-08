@@ -1,15 +1,5 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  useLoadScript,
-  MarkerF,
-  Icon,
-} from "@react-google-maps/api";
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from "use-places-autocomplete";
-import { Combobox } from "@headlessui/react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import {
   Card,
   CardBody,
@@ -17,12 +7,9 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-import { RocketLaunchIcon } from "@heroicons/react/24/solid";
-import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 export default function MapView({
-  isLoaded,
   events,
   setCurrentEvent,
   slideoverOpen,
@@ -38,15 +25,23 @@ export default function MapView({
   unRSVPSuccess,
   currentEvent,
 }) {
-  const [selected, setSelected] = useState({
+  const libraries = ["places"];
+
+  const { isLoaded } = useLoadScript({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries,
+    version: "weekly",
+    async: true,
+  });
+
+  const [selected] = useState({
     lat: 40.7127753,
     lng: -74.0059728,
   });
   const [eventMarkers, setEventMarkers] = useState(events);
 
-  const center = useMemo(() => selected, []);
-
-  const [selectedMarker, setSelectedMarker] = useState(null);
+  const center = useMemo(() => selected, [selected]);
 
   const containerStyle = {
     width: "100%",
@@ -71,7 +66,7 @@ export default function MapView({
   //   return useRef(null);
   // });
 
-  const reColorSelectedMarker = () => {
+  const reColorSelectedMarker = useCallback(() => {
     const matchingIndex = eventMarkers.findIndex(
       (eventMarker) => eventMarker === currentEvent
     );
@@ -86,11 +81,11 @@ export default function MapView({
         strokeWeight: 2,
       });
     }
-  };
+  }, [eventMarkers, currentEvent]);
 
   useEffect(() => {
     reColorSelectedMarker();
-  }, [currentEvent]);
+  }, [currentEvent, reColorSelectedMarker]);
 
   useEffect(() => {
     if (!slideoverOpen) {
@@ -109,7 +104,7 @@ export default function MapView({
     } else {
       reColorSelectedMarker();
     }
-  }, [slideoverOpen]);
+  }, [slideoverOpen, reColorSelectedMarker]);
 
   if (!isLoaded) return <div>Loading... </div>;
 
@@ -188,7 +183,7 @@ export default function MapView({
 
             <div className="overflow-auto  pl-[10px] pr-[10px] pb-[10px] flex flex-col max-h-[600px]">
               {events.map((event, key) => {
-                console.log(event)
+                console.log(event);
                 return (
                   <Card
                     key={key}
@@ -215,14 +210,19 @@ export default function MapView({
                         </Typography>
                         <Typography>{event.event_date}</Typography>
                         <Typography>{event.event_address}</Typography>
-                        <Typography>   {event.category && event.category.map((categoryItem, index) => (
-              <span
-                key={index}
-                className="bg-gray-200 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-              >
-                {categoryItem.charAt(0).toUpperCase() + categoryItem.slice(1)}
-              </span>
-            ))}</Typography>
+                        <Typography>
+                          {" "}
+                          {event.category &&
+                            event.category.map((categoryItem, index) => (
+                              <span
+                                key={index}
+                                className="bg-gray-200 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                              >
+                                {categoryItem.charAt(0).toUpperCase() +
+                                  categoryItem.slice(1)}
+                              </span>
+                            ))}
+                        </Typography>
                       </div>
                     </CardBody>
                     <CardFooter className=" flex pt-0">

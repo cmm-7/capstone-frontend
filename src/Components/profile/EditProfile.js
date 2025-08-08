@@ -18,7 +18,7 @@ function EditProfile({ setCurrentUser, session, currentUser }) {
     if (!session || !session.session_id) {
       navigate("/login");
     }
-  }, [session]);
+  }, [session, navigate]);
 
   // Function to update the 'profileUser' state with input field values
   const updateProfileUser = (e) => {
@@ -36,7 +36,7 @@ function EditProfile({ setCurrentUser, session, currentUser }) {
         navigate("/404");
         console.error("Error fetching user:", error);
       });
-  }, [id, API]);
+  }, [id, API, navigate]);
 
   // Triggered when the user selects a file for profile picture upload
   const handleProfileFileChange = (event) => {
@@ -73,7 +73,6 @@ function EditProfile({ setCurrentUser, session, currentUser }) {
       .post(`${API}/users/${id}/upload/profile`, formData)
       .then((response) => {
         // Handle successful upload
-        const fileUrl = response.data.staticUrl;
         setProfileUser({ ...profileUser });
       })
       .catch((error) => {
@@ -93,7 +92,6 @@ function EditProfile({ setCurrentUser, session, currentUser }) {
       .post(`${API}/users/${id}/upload/cover`, formData)
       .then((response) => {
         // Handle successful upload
-        const fileUrl = response.data.staticUrl;
         window.alert("Photo successfully uploaded! 🙏🏽");
       })
       .catch((error) => {
@@ -174,13 +172,20 @@ function EditProfile({ setCurrentUser, session, currentUser }) {
         />
         <div className>
           <div>
-            <Sidebar currentUser={currentUser} />
+            <Sidebar
+              currentUser={currentUser}
+              session={session}
+              setCurrentUser={setCurrentUser}
+            />
             <nav className="lg:hidden flex items-center justify-between p-8 bg-gray-700 mb-3">
               <div className="w-full xl:w-auto px-2 xl:mr-12">
                 <div className="flex items-center justify-between">
-                  <a className="inline-flex items-center h-8" href="#">
-                    <img src="trizzle-assets/logos/trizzle-logo.svg" alt />
-                  </a>
+                  <button
+                    type="button"
+                    className="inline-flex items-center h-8"
+                  >
+                    <img src="trizzle-assets/logos/trizzle-logo.svg" alt="" />
+                  </button>
                   <div className="xl:hidden">
                     <button className="navbar-burger text-gray-400 hover:text-gray-300 focus:outline-none">
                       <svg

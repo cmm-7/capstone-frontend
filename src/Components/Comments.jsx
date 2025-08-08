@@ -85,7 +85,7 @@ export default function Comments({
         setComments(res.data);
       });
     }
-  }, [currentEvent]);
+  }, [currentEvent, API]);
 
   useEffect(() => {
     if (commentRef.current) {
@@ -126,7 +126,7 @@ export default function Comments({
           <img
             className="inline-block h-10 w-10 rounded-full outline outline-1 outline-orange-500"
             src={currentUser.profile_pic}
-            alt="Current User's Profile Picture"
+            alt=""
           />
         </div>
         <div className="min-w-0 flex-1 ">
@@ -267,6 +267,7 @@ export default function Comments({
                 <div className="bg-white p-2 rounded-lg shadow-md relative">
                   <img
                     src={profile_pic}
+                    alt=""
                     className="rounded-full h-6 w-6 outline outline-orange-500 outline-1 cursor-pointer absolute left-2 top-2"
                     onClick={() => {
                       setChatTargetID(user_id);

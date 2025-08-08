@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -32,20 +31,6 @@ export default function CreateEventSlideOver({
     event_photos: "",
   });
 
-  const [interest, setInterest] = useState([]);
-
-  const [address, setAddress] = useState({
-    streetAddress: "",
-    city: "",
-    state: "",
-    zip: "",
-  });
-
-  const [value, setValue] = useState({
-    startDate: null,
-    endDate: null,
-  });
-  const [selectedFile, setSelectedFile] = useState(null);
   const [eventPhoto, setEventPhoto] = useState("");
   // const { id } = useParams();
   // const navigate = useNavigate();
@@ -205,8 +190,6 @@ export default function CreateEventSlideOver({
     interests.push("Limited Time");
   }
   // Add more interests as needed
-
-  const isCheckboxSelected = (option) => selectedOptions.includes(option);
 
   const isCheckboxDisabled = (option) => {
     if (
